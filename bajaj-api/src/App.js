@@ -1,199 +1,91 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./App.css";
+import './App.css'; // Importing the CSS file
 
 function App() {
-    const [getData, setGetData] = useState(null);
-    const [postResponse, setPostResponse] = useState(null);
-    const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
-        userId: "",
-        collegeEmail: "",
-        rollNumber: "",
-        inputArray: "",
-        numbers: "",
-        alphabets: ""
+        data: "",
+        file: null,
     });
+    const [response, setResponse] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleGetRequest = async () => {
-        try {
-            const response = await axios.get("https://bajaj-backend-1zt8.onrender.com/api/endpoint");
-            setGetData(response.data);
-        } catch (error) {
-            console.error("Error fetching GET data:", error);
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setFormData({ ...formData, file: reader.result.split(",")[1] }); // Get Base64 string
+            };
+            reader.readAsDataURL(file);
         }
     };
 
-    const handlePostRequest = async () => {
-
-        const payload = new FormData();
-
-        payload.append("user_id", formData.userId);
-        payload.append("college_email", formData.collegeEmail);
-        payload.append("roll_number", formData.rollNumber);
-        payload.append("input_array", formData.inputArray);
-        payload.append("numbers", formData.numbers);
-        payload.append("alphabets", formData.alphabets);
-        payload.append("HighestLowerCase", formData.highestLowercase);
-        payload.append("PrimeFound", formData.primeFound);
-        if (file) payload.append("file", file);
-
+    const handleSubmit = async () => {
         try {
+            // Clean the input string (remove spaces around the quotes)
+            const cleanedData = formData.data.trim();
+    
+            // Try parsing the cleaned input as JSON
+            const dataArray = JSON.parse(cleanedData);
+    
+            // Proceed with the payload if parsing is successful
+            const payload = {
+                data: dataArray,
+                file_b64: formData.file,
+            };
+    
             const response = await axios.post("https://bajaj-backend-1zt8.onrender.com/api/endpoint", payload, {
                 headers: {
-                    "Content-Type": "multipart/form-data"
-                }
+                    "Content-Type": "application/json",
+                },
             });
-            setPostResponse(response.data);
+            setResponse(response.data);
         } catch (error) {
-            console.error("Error fetching POST data:", error);
+            // If parsing fails, show an error message
+            alert("Invalid JSON format. Please use straight quotes and valid JSON syntax.");
+            console.error("Error parsing JSON:", error);
         }
     };
+    
+    
 
     return (
-        <div className="App">
-            <header>
-                <h1>REST API Interaction</h1>
-                <p>Send and Receive Data Bajaj Finserv</p>
-            </header>
+        <div className="app-container">
+            <h1>API Request Example</h1>
+            <form className="form-container">
+                <div className="form-group">
+                    <label>Input Array (JSON format):</label>
+                    <input
+                        type="text"
+                        name="data"
+                        value={formData.data}
+                        onChange={handleChange}
+                        placeholder='Example: ["M", "1", "334", "4", "B", "Z", "a", "7"]'
+                        required
+                    />
+                </div>
 
-            <main>
-                <section className="api-section">
-                    <h2>GET Request</h2>
-                    <button onClick={handleGetRequest}>Fetch GET Data</button>
-                    {getData && (
-                        <div className="response-box">
-                            <h3>GET Response</h3>
-                            <pre>{JSON.stringify(getData, null, 2)}</pre>
-                        </div>
-                    )}
-                </section>
+                <div className="form-group">
+                    <label>Upload File:</label>
+                    <input type="file" name="file" onChange={handleFileChange} required />
+                </div>
 
-                <section className="api-section">
-                    <h2>POST Request</h2>
-                    <form className="form-box" onSubmit={(e) => e.preventDefault()}>
-                        <div className="form-group">
-                            <label>User ID:</label>
-                            <input
-                                type="text"
-                                name="userId"
-                                value={formData.userId}
-                                onChange={handleChange}
-                                placeholder="Enter your User ID"
-                                required
-                            />
-                        </div>
+                <button type="button" className="submit-button" onClick={handleSubmit}>
+                    Submit
+                </button>
+            </form>
 
-                        <div className="form-group">
-                            <label>College Email:</label>
-                            <input
-                                type="email"
-                                name="collegeEmail"
-                                value={formData.collegeEmail}
-                                onChange={handleChange}
-                                placeholder="Enter your College Email"
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Roll Number:</label>
-                            <input
-                                type="text"
-                                name="rollNumber"
-                                value={formData.rollNumber}
-                                onChange={handleChange}
-                                placeholder="Enter your Roll Number"
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Input Array:</label>
-                            <input
-                                type="text"
-                                name="inputArray"
-                                value={formData.inputArray}
-                                onChange={handleChange}
-                                placeholder='Example: ["a", 1, 2, "b"]'
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Numbers:</label>
-                            <input
-                                type="text"
-                                name="numbers"
-                                value={formData.numbers}
-                                onChange={handleChange}
-                                placeholder='Example: ["1", "1", "2", "334"]'
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Alphabets:</label>
-                            <input
-                                type="text"
-                                name="alphabets"
-                                value={formData.alphabets}
-                                onChange={handleChange}
-                                placeholder='Example: [“M”,”B”,”Z”,”a”]'
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Highest Lower Case:</label>
-                            <input
-                                type="text"
-                                name="HighestLowerCase"
-                                value={formData.highestLowercase}
-                                onChange={handleChange}
-                                placeholder='Example: [”a”]'
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Prime Found:</label>
-                            <input
-                                type="boolean"
-                                name="PrimeFound"
-                                value={formData.highestLowercase}
-                                onChange={handleChange}
-                                placeholder= 'Example: true'
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Upload File:</label>
-                            <input
-                                type="file"
-                                onChange={(e) => setFile(e.target.files[0])}
-                                accept=".txt,.pdf,.png,.jpg"
-                            />
-                        </div>
-
-                        <button type="button" onClick={handlePostRequest}>
-                            Send POST Request
-                        </button>
-                    </form>
-                    {postResponse && (
-                        <div className="response-box">
-                            <h3>POST Response</h3>
-                            <pre>{JSON.stringify(postResponse, null, 2)}</pre>
-                        </div>
-                    )}
-                </section>
-            </main>
+            {response && (
+                <div className="response">
+                    <h2>Response:</h2>
+                    <pre>{JSON.stringify(response, null, 2)}</pre>
+                </div>
+            )}
         </div>
     );
 }
