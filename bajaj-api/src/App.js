@@ -30,7 +30,9 @@ function App() {
     };
 
     const handlePostRequest = async () => {
+
         const payload = new FormData();
+
         payload.append("user_id", formData.userId);
         payload.append("college_email", formData.collegeEmail);
         payload.append("roll_number", formData.rollNumber);
@@ -126,7 +128,7 @@ function App() {
                         <div className="form-group">
                             <label>Numbers:</label>
                             <input
-                                type="number"
+                                type="text"
                                 name="numbers"
                                 value={formData.numbers}
                                 onChange={handleChange}
