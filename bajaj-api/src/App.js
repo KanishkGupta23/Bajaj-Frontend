@@ -10,7 +10,9 @@ function App() {
         userId: "",
         collegeEmail: "",
         rollNumber: "",
-        inputArray: ""
+        inputArray: "",
+        numbers: "",
+        alphabets: ""
     });
 
     const handleChange = (e) => {
@@ -33,6 +35,10 @@ function App() {
         payload.append("college_email", formData.collegeEmail);
         payload.append("roll_number", formData.rollNumber);
         payload.append("input_array", formData.inputArray);
+        payload.append("numbers", formData.numbers);
+        payload.append("alphabets", formData.alphabets);
+        payload.append("HighestLowerCase", formData.highestLowercase);
+        payload.append("PrimeFound", formData.primeFound);
         if (file) payload.append("file", file);
 
         try {
@@ -113,6 +119,54 @@ function App() {
                                 value={formData.inputArray}
                                 onChange={handleChange}
                                 placeholder='Example: ["a", 1, 2, "b"]'
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Numbers:</label>
+                            <input
+                                type="number"
+                                name="numbers"
+                                value={formData.numbers}
+                                onChange={handleChange}
+                                placeholder='Example: ["1", "1", "2", "334"]'
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Alphabets:</label>
+                            <input
+                                type="text"
+                                name="alphabets"
+                                value={formData.alphabets}
+                                onChange={handleChange}
+                                placeholder='Example: [“M”,”B”,”Z”,”a”]'
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Highest Lower Case:</label>
+                            <input
+                                type="text"
+                                name="HighestLowerCase"
+                                value={formData.highestLowercase}
+                                onChange={handleChange}
+                                placeholder='Example: [”a”]'
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Prime Found:</label>
+                            <input
+                                type="boolean"
+                                name="PrimeFound"
+                                value={formData.highestLowercase}
+                                onChange={handleChange}
+                                placeholder= 'Example: true'
                                 required
                             />
                         </div>
